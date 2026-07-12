@@ -1,6 +1,7 @@
 import "../global.css";
 import React, { useEffect } from "react";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { View } from "react-native";
+import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
@@ -19,12 +20,14 @@ function RootNavigator() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const segments = useSegments();
   const router = useRouter();
+  const navState = useRootNavigationState();
 
   const onboarded = profile?.onboarding_completed ?? false;
+  const booting = initializing || (session && profileLoading);
 
   useEffect(() => {
-    if (initializing) return;
-    if (session && profileLoading) return; // wait for profile before routing
+    if (!navState?.key) return; // root navigator not mounted yet
+    if (booting) return; // wait for auth + profile before routing
 
     const group = segments[0];
     const inAuth = group === "(auth)";
@@ -37,20 +40,26 @@ function RootNavigator() {
     } else if (session && onboarded && (inAuth || inOnboarding)) {
       router.replace("/(tabs)/events");
     }
-  }, [session, initializing, profileLoading, onboarded, segments, router]);
+  }, [navState?.key, booting, session, onboarded, segments, router]);
 
-  if (initializing || (session && profileLoading)) {
-    return <Loading label="Warming up…" />;
-  }
-
+  // Always render the navigator so the Root Layout mounts on the first render.
+  // Show the loading state as an overlay instead of unmounting the Stack —
+  // unmounting it caused "Attempted to navigate before mounting the Root Layout".
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(onboarding)" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="survey" options={{ presentation: "modal" }} />
-      <Stack.Screen name="admin" />
-    </Stack>
+    <View style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(onboarding)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="survey" options={{ presentation: "modal" }} />
+        <Stack.Screen name="admin" />
+      </Stack>
+      {booting ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+          <Loading label="Warming up…" />
+        </View>
+      ) : null}
+    </View>
   );
 }
 
