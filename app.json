@@ -16,7 +16,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "edu.stanford.climateweek",
-      "associatedDomains": ["applinks:climateweek.stanford.edu"]
+      "associatedDomains": [
+        "applinks:climateweek.stanford.edu"
+      ]
     },
     "android": {
       "package": "edu.stanford.climateweek",
@@ -27,19 +29,20 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-web-browser",
       [
         "expo-calendar",
         {
           "calendarPermission": "Stanford Climate Week uses your calendar to add events you register for."
         }
-      ]
+      ],
+      "expo-asset",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
