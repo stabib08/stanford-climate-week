@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as WebBrowser from "expo-web-browser";
@@ -9,7 +9,10 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Field } from "@/components/ui/Field";
 import { supabase } from "@/lib/supabase";
+import { cn } from "@/utils/cn";
 import { emailSchema, isStanfordEmail, type EmailFormValues } from "@/schemas/profile";
+
+type AuthMode = "signup" | "login";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,6 +20,11 @@ export default function SignIn() {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // "signup" creates an account for unknown emails; "login" refuses to, so a
+  // returning user who mistypes their email gets told rather than silently
+  // getting a fresh, empty account. Default to signup so a real new user is
+  // never blocked on their first try.
+  const [mode, setMode] = useState<AuthMode>("signup");
 
   const { control, handleSubmit, watch, formState } = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
@@ -32,11 +40,29 @@ export default function SignIn() {
     setError(null);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectTo },
+      options: {
+        emailRedirectTo: redirectTo,
+        shouldCreateUser: mode === "signup",
+      },
     });
     setBusy(false);
-    if (error) setError(error.message);
-    else setSent(true);
+    if (error) {
+      // In log-in mode Supabase won't create an account for an unknown email;
+      // it returns a signup-not-allowed error. Nudge the user to sign up
+      // instead of surfacing the raw message.
+      const noAccount =
+        mode === "login" &&
+        /signup|sign up|not allowed|not found|does not exist|no.*user|user.*not/i.test(
+          error.message,
+        );
+      setError(
+        noAccount
+          ? "We couldn't find an account for that email. Tap “New here?” above to create one."
+          : error.message,
+      );
+    } else {
+      setSent(true);
+    }
   });
 
   // ---- Stanford SSO (SAML) ----
@@ -70,6 +96,10 @@ export default function SignIn() {
     }
   };
 
+  const kind = mode === "signup" ? "sign-up" : "login";
+  const linkLabel = `Email me a ${kind} link`;
+  const linkLabelInstead = `Email me a ${kind} link instead`;
+
   if (sent) {
     return (
       <Screen>
@@ -92,6 +122,32 @@ export default function SignIn() {
         <Text className="mt-2 text-base text-muted">
           Oct 19–25, 2026 · Sign in to view the agenda, register, and connect.
         </Text>
+      </View>
+
+      {/* New vs. returning: controls whether an unknown email creates an account. */}
+      <View className="mb-5 flex-row rounded-2xl bg-forest-tint p-1">
+        {([
+          ["signup", "New here?"],
+          ["login", "Returning?"],
+        ] as const).map(([value, text]) => {
+          const active = mode === value;
+          return (
+            <Pressable
+              key={value}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              onPress={() => {
+                setMode(value);
+                setError(null);
+              }}
+              className={cn("flex-1 items-center rounded-xl py-2.5", active && "bg-forest")}
+            >
+              <Text className={cn("text-sm font-semibold", active ? "text-white" : "text-forest")}>
+                {text}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
 
       <Controller
@@ -120,7 +176,7 @@ export default function SignIn() {
         <Button label="Continue with Stanford SSO" onPress={signInWithStanford} loading={busy} />
       ) : (
         <Button
-          label="Email me a sign-in link"
+          label={linkLabel}
           onPress={sendMagicLink}
           loading={busy}
           disabled={!formState.isValid}
@@ -134,7 +190,7 @@ export default function SignIn() {
       </View>
 
       {stanford ? (
-        <Button label="Email me a link instead" variant="outline" onPress={sendMagicLink} loading={busy} />
+        <Button label={linkLabelInstead} variant="outline" onPress={sendMagicLink} loading={busy} />
       ) : (
         <Button label="Use Stanford SSO" variant="outline" onPress={signInWithStanford} loading={busy} />
       )}
