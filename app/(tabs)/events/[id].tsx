@@ -17,6 +17,7 @@ import {
 import { useRoles } from "@/hooks/useProfile";
 import { fmtRange, isWithinCheckInWindow } from "@/utils/dates";
 import { addEventToCalendar } from "@/utils/calendar";
+import { confirm } from "@/utils/confirm";
 import { labelFor } from "@/lib/constants";
 
 export default function EventDetail() {
@@ -65,11 +66,15 @@ export default function EventDetail() {
     }
   };
 
-  const handleCancel = () => {
-    Alert.alert("Cancel registration?", "You can re-register anytime while spots remain.", [
-      { text: "Keep it", style: "cancel" },
-      { text: "Cancel registration", style: "destructive", onPress: () => cancel.mutate() },
-    ]);
+  const handleCancel = async () => {
+    const ok = await confirm({
+      title: "Cancel registration?",
+      message: "You can re-register anytime while spots remain.",
+      confirmLabel: "Cancel registration",
+      cancelLabel: "Keep it",
+      destructive: true,
+    });
+    if (ok) cancel.mutate();
   };
 
   return (
