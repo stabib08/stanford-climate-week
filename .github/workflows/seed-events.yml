@@ -1,0 +1,39 @@
+name: Sync SCW agenda
+
+# Events can only be added/edited via this repo (never the app). Whenever
+# content/events.json changes on main, this workflow pushes the agenda to
+# Supabase using the service-role key. Also runnable on demand.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/events.json"
+      - "scripts/seed-events.mjs"
+  workflow_dispatch:
+
+concurrency:
+  group: seed-events
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The seed script only needs @supabase/supabase-js.
+      - name: Install client
+        run: npm install --no-save @supabase/supabase-js@^2.45.4
+
+      - name: Validate events.json
+        run: node -e "JSON.parse(require('fs').readFileSync('content/events.json','utf8')); console.log('events.json is valid JSON')"
+
+      - name: Sync agenda to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/seed-events.mjs

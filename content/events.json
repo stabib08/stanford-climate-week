@@ -1,0 +1,71 @@
+[
+  {
+    "slug": "opening-keynote",
+    "title": "Opening Keynote: The Decade of Deployment",
+    "description": "Kicking off Stanford Climate Week with a look at how the next ten years turn climate ambition into deployed infrastructure across power, transport, and industry.",
+    "starts_at": "2026-10-19T09:00:00-07:00",
+    "ends_at": "2026-10-19T10:30:00-07:00",
+    "location": "Bing Concert Hall",
+    "format_tags": ["keynote", "symposium"],
+    "sector_tags": ["deep_tech", "vc"],
+    "speakers": [
+      { "name": "Dr. Arun Majumdar", "role": "Dean, Stanford Doerr School of Sustainability" },
+      { "name": "Kate Brandt", "role": "Chief Sustainability Officer" }
+    ]
+  },
+  {
+    "slug": "financing-transition",
+    "title": "Fireside: Financing the Energy Transition",
+    "description": "A candid conversation with leading climate investors on where capital is flowing, what founders get wrong, and the deals defining this cycle.",
+    "starts_at": "2026-10-20T13:00:00-07:00",
+    "ends_at": "2026-10-20T14:00:00-07:00",
+    "location": "GSB Cemex Auditorium",
+    "format_tags": ["fireside_chat"],
+    "sector_tags": ["vc", "deep_tech"],
+    "speakers": [{ "name": "Gabriel Kra", "role": "Managing Director, Prelude Ventures" }]
+  },
+  {
+    "slug": "nature-based-workshop",
+    "title": "Workshop: Building with Nature-Based Solutions",
+    "description": "Hands-on session on designing, measuring, and financing nature-based carbon and resilience projects. Bring a laptop.",
+    "starts_at": "2026-10-21T10:00:00-07:00",
+    "ends_at": "2026-10-21T12:00:00-07:00",
+    "location": "Y2E2 Room 111",
+    "format_tags": ["workshop"],
+    "sector_tags": ["nature_based"],
+    "speakers": [{ "name": "Dr. Katharine Mach", "role": "Professor of Environmental Science" }]
+  },
+  {
+    "slug": "ai-grid",
+    "title": "Lecture: AI for Grid Optimization",
+    "description": "How machine learning is reshaping grid balancing, forecasting, and demand response as renewables scale.",
+    "starts_at": "2026-10-22T15:00:00-07:00",
+    "ends_at": "2026-10-22T16:00:00-07:00",
+    "location": "Huang Engineering Center",
+    "format_tags": ["lecture"],
+    "sector_tags": ["ai", "deep_tech"],
+    "speakers": [{ "name": "Dr. Ram Rajagopal", "role": "Associate Professor, Civil & Environmental Engineering" }]
+  },
+  {
+    "slug": "deep-tech-symposium",
+    "title": "Symposium: Deep Tech Hardware for Decarbonization",
+    "description": "A multi-panel symposium on the hardware frontier: long-duration storage, green steel, and industrial heat.",
+    "starts_at": "2026-10-23T09:30:00-07:00",
+    "ends_at": "2026-10-23T12:30:00-07:00",
+    "location": "NVIDIA Auditorium",
+    "format_tags": ["symposium", "panel"],
+    "sector_tags": ["deep_tech"],
+    "speakers": []
+  },
+  {
+    "slug": "community-night",
+    "title": "Networking Mixer: Climate Community Night",
+    "description": "Wind down the week and connect with founders, researchers, and investors over drinks and demos.",
+    "starts_at": "2026-10-24T18:00:00-07:00",
+    "ends_at": "2026-10-24T20:00:00-07:00",
+    "location": "Arrillaga Alumni Center",
+    "format_tags": ["networking"],
+    "sector_tags": ["deep_tech", "vc", "nature_based"],
+    "speakers": []
+  }
+]
