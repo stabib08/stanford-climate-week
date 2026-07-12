@@ -49,7 +49,17 @@ export default function SignIn() {
     });
     if (error || !data?.url) {
       setBusy(false);
-      setError(error?.message ?? "Stanford SSO is not configured yet.");
+      // When SAML SSO isn't enabled on the project, the auth server returns
+      // "SAML 2.0 is disabled" (or the SSO endpoint 404s). Don't show that raw
+      // message — point the user at the magic-link fallback, which always works.
+      const raw = error?.message ?? "";
+      const ssoUnavailable =
+        !data?.url || /saml|sso|disabled|not.*enabled|404|not found/i.test(raw);
+      setError(
+        ssoUnavailable
+          ? "Stanford SSO isn't available yet. Use “Email me a link instead” below to sign in with your Stanford email."
+          : raw,
+      );
       return;
     }
     const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
