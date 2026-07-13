@@ -173,7 +173,7 @@ export default function SignIn() {
       {error ? <Text className="mb-3 text-sm text-cardinal">{error}</Text> : null}
 
       {stanford ? (
-        <Button label="Continue with Stanford SSO" onPress={signInWithStanford} loading={busy} />
+        <Button label="Continue with Stanford SSO *" onPress={signInWithStanford} loading={busy} />
       ) : (
         <Button
           label={linkLabel}
@@ -192,10 +192,16 @@ export default function SignIn() {
       {stanford ? (
         <Button label={linkLabelInstead} variant="outline" onPress={sendMagicLink} loading={busy} />
       ) : (
-        <Button label="Use Stanford SSO" variant="outline" onPress={signInWithStanford} loading={busy} />
+        <Button label="Use Stanford SSO *" variant="outline" onPress={signInWithStanford} loading={busy} />
       )}
 
-      <Text className="mt-6 text-center text-xs text-muted">
+      <Text className="mt-4 text-center text-xs text-muted">
+        <Text className="font-semibold text-cardinal">* </Text>
+        Stanford SSO isn’t available yet — it requires Supabase Pro. For now, please
+        sign in with a personal email.
+      </Text>
+
+      <Text className="mt-4 text-center text-xs text-muted">
         By continuing you agree to the SCW community guidelines. Your data is protected
         by row-level security and only visible to you and the SCW Impact Team.
       </Text>
